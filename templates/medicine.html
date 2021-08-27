@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+    <style>
+        .header{
+            background-color: black;
+            height:50px ;
+            color: whitesmoke;
+            /* text-align: center; */
+            
+        }
+        .logo{
+           
+            height:50px ;
+            color: whitesmoke;
+            text-align: center;
+            margin-top: -45px;
+        }
+    
+        .search-container{
+            margin-left: 1000px;
+            margin-top: -34px;
+        }
+        .searchbar{
+            width: 200px;
+        }
+        
+     .sidebar {
+      margin: 0;
+      padding: 0;
+      width: 150px;
+      background-color: black;
+      position: fixed;
+      height: 100%;
+      overflow: auto;
+    }
+    
+    .sidebar a {
+      display: block;
+      color: whitesmoke;
+      margin-top: 10px;
+      padding: 12px;
+      text-decoration: none;
+    }
+     
+    .sidebar a.active {
+      background-color: #04AA6D;
+      color: white;
+    }
+    
+    .sidebar a:hover:not(.active) {
+      background-color: #555;
+      color: white;
+    }
+    .container{
+          margin-left: 160px;
+          margin-top: 10px; /* Same as the width of the sidenav */
+        }
+    
+        </style>
+</head>
+
+<body>
+    <div class="header">
+        <div><img src="{{url_for('static', filename = 'phar.png')}}" ></div>
+        
+        <h1 class="logo">Medicine Module</h1>
+        
+    </div>
+
+
+    </div>
+
+    <div class="sidebar">
+        <a href="/status">Home</a>
+        <a href="/patient">Patient</a>
+        <a href="/supplier">Supplier</a>
+        <a href="/medicine">Medicine</a>
+        <a href="/purchase">Purchase</a>
+        <a href="/sales">Sales</a>
+        <a href="/logout">Logout</a>
+
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col md-12">
+                <h2>
+                    <button type="button" class="btn btn-success text-right float-right" data-toggle="modal"
+                        data-target="#myModal"> Add Medicine</button>
+                    <div class="search-container">
+                        <form class="d-flex" action="{{ url_for('search_medicinedata') }}" method="post"
+                            autocomplete="off">
+                            <input class="form-control me-2 searchbar" type="search" placeholder="Search"
+                                aria-label="Search" name="Name">
+                            <button class="btn btn-outline-success" type="submit">Search</button>
+                        </form>
+                    </div>
+                </h2>
+                {%with messages = get_flashed_messages()%}
+
+                {%if messages%}
+
+                {% for message in messages %}
+                <div class="alert alert-success alert-dismissable" role="alert">
+
+                    <button type="button" class="close" data-dismiss="alert" aria-label="close">
+
+                        <span aria-hidden="true">&times;</span>
+
+                    </button>
+                    {{message}}
+                </div>
+                {%endfor%}
+                {%endif%}
+                {%endwith%}
+
+
+
+                <table class="table table-striped">
+
+
+                    <tr>
+                        <th>Serial</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Company</th>
+                        <th>Batch No</th>
+                        <th>Mfg Date</th>
+                        <th>Expiry Date</th>
+                        <th>Quantity</th>
+                        <th>Selling Price</th>
+                        <th>Action</th>
+
+
+                    </tr>
+
+
+
+
+
+                    {% for row in medicine %}
+                    <tr>
+                        <td>{{loop.index}}</td>
+                        <td>{{row.1}}</td>
+                        <td>{{row.8}}</td>
+                        <td>{{row.2}}</td>
+                        <td>{{row.3}}</td>
+                        <td>{{row.4}}</td>
+                        <td>{{row.5}} </td>
+                        <td>{{row.6}} </td>
+                        <td>{{row.7}} </td>
+                        <td>
+
+
+                            <a href="/updatemedicine/{{row.0}}" class="btn btn-success btn-xs" data-toggle="modal"
+                                data-target="#modaledit{{row.0}}">Edit</a>
+                            <a href="/deletemedicine/{{row.0}}" class="btn btn-danger btn-xs"
+                                onclick="return confirm('Are You Sure For Delete?')">Delete</a>
+
+                        </td>
+
+                    </tr>
+
+                    <div id="modaledit{{row.0}}" class="modal fade" role="dialog">
+
+
+                        <div class="modal-dialog">
+
+
+                            <div class="modal-content">
+
+
+                                <div class="modal-header">
+
+
+                                    <h4 class="modal-title">Update Data</h4>
+
+
+                                </div>
+
+
+                                <div class="modal-body">
+
+
+                                    <form action="/updatemedicine/{{row.0}}" method="POST">
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label> Name:</label>
+                                                    <input type="text" class="form-control" name="name" maxlength="30"
+                                                        value="{{row.1}}" required="1">
+                                                </div>
+                                            </div><!-- /.col -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Company:</label>
+                                                    <input type="text" class="form-control" name="company"
+                                                        maxlength="50" value="{{row.2}}" required="1">
+                                                </div>
+                                            </div><!-- /.col -->
+                                        </div><!-- /.row -->
+
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Batch No.</label>
+                                                    <input type="text" class="form-control" name="batch_no"
+                                                        maxlength="10" value="{{row.3}}" required="1">
+                                                </div>
+                                            </div><!-- /.col -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Quantity</label>
+                                                    <input type="text" class="form-control" name="qty" maxlength="7" title="Input should not consist of any alphabet"
+                                                        value="{{row.6}}"  pattern="[0-9]+" required="1">
+                                                </div>
+                                            </div><!-- /.col -->
+                                        </div><!-- /.row -->
+
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Selling Price:</label>
+                                                    <input type="text" class="form-control" name="selling_price" pattern="[0-9 _.]*" title="Input should not consist of any alphabet"
+                                                        maxlength="7" value="{{row.7}}" required="1">
+                                                </div>
+                                            </div><!-- /.col -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Type</label>
+                                                    <input type="text" class="form-control" name="type"
+                                                        list="select-list-id"  value="{{row.8}}" required="1">
+                                                </div>
+                                                <datalist id="select-list-id">
+                                                    <option value="Sachet"></option>
+                                                    <option value="Syrup"></option>
+                                                    <option value="Strips"></option>
+                                                </datalist>
+                                            </div><!-- /.col -->
+
+                                        </div><!-- /.row -->
+
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Mfg Date:</label>
+                                                    <input type="date" class="form-control" name="mfg"
+                                                        value="{{row.4}}" required="1">
+                                                </div>
+                                            </div><!-- /.col -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Expiry Date:</label>
+                                                    <input type="date" class="form-control" name="expiry"
+                                                        value="{{row.5}}" required="1">
+                                                </div>
+                                            </div><!-- /.col -->
+
+                                        </div><!-- /.row -->
+
+                                        <div class="form-group">
+
+
+                                            <button class="btn btn-success my-2" type="submit">Update Data</button>
+
+
+                                        </div>
+
+
+                                    </form>
+
+
+
+
+                                </div>
+
+
+                                <div class="modal-footer">
+
+
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+
+                <div id="myModal" class="modal fade" role="dialog">
+
+
+                    <div class="modal-dialog">
+
+
+                        <div class="modal-content">
+
+
+                            <div class="modal-header">
+
+
+                                <h4 class="modal-title">Please Insert Data</h4>
+
+
+                            </div>
+
+
+                            <div class="modal-body">
+
+
+                                <form action="{{ url_for('add_medicinedata') }}" method="POST">
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label> Medicine Name:</label>
+                                                <input type="text" class="form-control" name="name" maxlength="30"
+                                                    required="1">
+                                            </div>
+                                        </div><!-- /.col -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Company:</label>
+                                                <input type="text" class="form-control" name="company" maxlength="50"
+                                                    required="1">
+                                            </div>
+                                        </div><!-- /.col -->
+                                    </div><!-- /.row -->
+
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Batch No.</label>
+                                                <input type="text" class="form-control" name="batch_no" maxlength="10"
+                                                    required="1">
+                                            </div>
+                                        </div><!-- /.col -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Quantity</label>
+                                                <input type="text" class="form-control" name="qty" maxlength="7"  pattern="[0-9]+" title="Input should not consist of any alphabet"
+                                                    required="1">
+                                            </div>
+                                        </div><!-- /.col -->
+
+                                    </div><!-- /.row -->
+
+
+
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Selling Price:</label>
+                                                <input type="text" class="form-control" name="selling_price" pattern="[0-9 _.]*" title="Input should not consist of any alphabet"
+                                                    maxlength="7" required="1">
+                                            </div>
+                                        </div><!-- /.col -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Type</label>
+                                                <input type="text" class="form-control" name="type"
+                                                    list="select-list-id" required="1">
+                                            </div>
+                                            <datalist id="select-list-id">
+                                                <option value="Sachet"></option>
+                                                <option value="Syrup"></option>
+                                                <option value="Strips"></option>
+                                            </datalist>
+                                        </div><!-- /.col -->
+
+                                    </div><!-- /.row -->
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Mfg Date:</label>
+                                                <input type="date" class="form-control" name="mfg" required="1">
+                                            </div>
+                                        </div><!-- /.col -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Expiry Date:</label>
+                                                <input type="date" class="form-control" name="expiry" required="1">
+                                            </div>
+                                        </div><!-- /.col -->
+
+                                    </div><!-- /.row -->
+
+
+
+                                    <div class="form-group">
+
+
+                                        <button class="btn btn-success my-2" type="submit">Insert Data</button>
+
+
+                                    </div>
+
+
+                                </form>
+
+
+                            </div>
+
+
+                            <div class="modal-footer">
+
+
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+        crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+        integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+        integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"
+        integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG"
+        crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="{{url_for('static', filename = 'js/bootstrap.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+
+    <script type="text/javascript" src="{{url_for('static', filename = 'js/bootstrap.min.js')}}"></script>
+</body>

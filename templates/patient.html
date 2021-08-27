@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <style>
+    .header{
+        background-color: black;
+        height:50px ;
+        color: whitesmoke;
+        /* text-align: center; */
+        
+    }
+    .logo{
+       
+        height:50px ;
+        color: whitesmoke;
+        text-align: center;
+        margin-top: -45px;
+    }
+
+    .search-container{
+        margin-left: 1000px;
+        margin-top: -34px;
+    }
+    .searchbar{
+        width: 200px;
+    }
+    
+ .sidebar {
+  margin: 0;
+  padding: 0;
+  width: 150px;
+  background-color: black;
+  position: fixed;
+  height: 100%;
+  overflow: auto;
+}
+
+.sidebar a {
+  display: block;
+  color: whitesmoke;
+  margin-top: 10px;
+  padding: 12px;
+  text-decoration: none;
+}
+ 
+.sidebar a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+
+.sidebar a:hover:not(.active) {
+  background-color: #555;
+  color: white;
+}
+.container{
+      margin-left: 160px;
+      margin-top: 10px; /* Same as the width of the sidenav */
+    }
+    </style>
+</head>
+
+<body>
+   
+    <div class="header">
+        <div><img src="{{url_for('static', filename = 'phar.png')}}" ></div>
+        
+        <h1 class="logo">Patient Module</h1>
+        
+    </div>
+            
+       
+    </div>
+
+    <div class="sidebar">
+        
+        <a href="/status">Home</a>
+        <a href="/patient">Patient</a>
+        <a href="/supplier">Supplier</a>
+        <a href="/medicine">Medicine</a>
+        <a href="/purchase">Purchase</a>
+        <a href="/sales">Sales</a>
+        <a href="/logout">Logout</a>
+        
+      </div>
+    <div class="container">
+        <div class="row">
+            <div class="col md-12">
+                <h2>
+                    <button type="button"    class="btn btn-success align-self-end d-flex pull-right btmargin" data-toggle="modal" data-target="#myModal"> Add
+                        Patient</button>
+                        <div class="search-container">
+                            <form class="d-flex" action="{{ url_for('search_patientdata') }}" method="post" autocomplete="off">
+                                <input class="form-control me-2 searchbar" type="search" placeholder="Search" aria-label="Search" name="Name">
+                                <button class="btn btn-outline-success" type="submit">Search</button>
+                              </form>
+                              </div>
+
+                </h2>
+                {%with messages = get_flashed_messages()%}
+
+                {%if messages%}
+
+                {% for message in messages %}
+                <div class="alert alert-success alert-dismissable" role="alert">
+
+                    <button type="button" class="close" data-dismiss="alert" aria-label="close">
+
+                        <span aria-hidden="true">&times;</span>
+
+                    </button>
+                    {{message}}
+                </div>
+                {%endfor%}
+                {%endif%}
+                {%endwith%}
+
+
+
+                <table class="table table-striped ">
+
+                    <tr>
+                        <th>Serial</th>
+                        <th>Name</th>
+                        <th>Precription No</th>
+                        <th>Contact No</th>
+                        <th>Address</th>
+                        <th>Refered By:-</th>
+                        <th>Action</th>
+
+
+                    </tr>
+
+
+
+
+
+                    {% for row in patient %}
+                    <tr>
+                        <td>{{loop.index}}</td>
+                        <td>{{row.1}} {{row.2}}</td>
+                        <td>{{row.3}}</td>
+                        <td>{{row.4}}</td>
+                        <td>{{row.5}},{{row.6}},{{row.7}}</td>
+                        <td>{{row.8}} </td>
+                        <td>
+
+
+                            <a href="/updatepatient/{{row.0}}" class="btn btn-success btn-xs" data-toggle="modal"
+                                data-target="#modaledit{{row.0}}">Edit</a>
+                            <a href="deletepatient/{{row.0}}" class="btn btn-danger btn-xs"
+                                onclick="return confirm('Are You Sure For Delete?')">Delete</a>
+
+                        </td>
+
+                    </tr>
+
+                    <div id="modaledit{{row.0}}" class="modal fade" role="dialog">
+
+
+                        <div class="modal-dialog">
+
+
+                            <div class="modal-content">
+
+
+                                <div class="modal-header">
+
+
+                                    <h4 class="modal-title">Update Information</h4>
+
+
+                                </div>
+
+
+                                <div class="modal-body">
+
+
+                                    <form action="/updatepatient/{{row.0}}" method="POST">
+
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>First Name:</label>
+                                                    <input type="text" class="form-control" name="firstname" pattern="[a-zA-Z\s]+" title="firstname should contain only lowercase or uppercase letters"  maxlength="15" 
+                                                        value="{{row.1}} " required="1">
+                                                </div>
+                                            </div><!-- /.col -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Last Name:</label>
+                                                    <input type="text" class="form-control" name="lastname" pattern="[a-zA-Z\s]+" title="lastname should contain only lowercase or uppercase letters"   maxlength="15" 
+                                                        value="{{row.2}}">
+                                                </div>
+                                            </div> <!-- /.col -->
+                                        </div> <!-- /.row -->
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Prescription Number:</label>
+                                                    <input type="text" class="form-control" name="prescription_no" maxlength="10"
+                                                        value="{{row.3}}" required="1">
+                                                </div>
+                                            </div><!-- /.col -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Doctor Name:</label>
+                                                    <input type="text" class="form-control" name="doctorname" required="1"
+                                                        value="{{row.8}}" list="select-list-id" >
+                                                </div>
+                                                <datalist id="select-list-id">
+                                                    <option value="Dinesh Singla"></option>
+                                                    <option value="Sahil Chabra"></option>
+                                                    <option value="Aarav Darsh"></option>
+                                                    <option value="Dinesh Garg"></option>
+                                                    <option value="Siddharth Garg"></option>
+                                                    <option value="Rohit Chabra"></option>
+                                                </datalist>
+                                            </div><!-- /.col -->
+                                        </div><!-- /.row -->
+
+
+                                        <div class="form-group">
+
+
+                                            <label>Contact Number</label>
+                                            <input type="text" class="form-control" name="phone" pattern="[0-9 _,]*"  title="Phone Number should not contain any alphabet" value="{{row.4}}" required="1">
+
+
+                                        </div>
+
+
+
+
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>House Number:</label>
+                                                    <input type="text" class="form-control" name="house_no" maxlength="10" required="1"
+                                                        value="{{row.5}}">
+                                                </div>
+                                            </div><!-- /.col -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Locality Name:</label>
+                                                    <input type="text" class="form-control" name="locality_name" maxlength="25"
+                                                        value="{{row.6}}" required="1">
+                                                </div>
+                                            </div><!-- /.col -->
+
+                                        </div><!-- /.row -->
+
+                                        <div class="col-md-6 ml-6 centre col-lg-4 col-lg-offset-4">
+                                            <div class="form-group  ml-6 center-block">
+                                                <label>City:</label>
+                                                <input type="text" class="form-control" name="city" maxlength="15"  value="{{row.7}}" required="1">
+                                            </div>
+                                        </div><!-- /.col -->
+
+
+                                        <div class="form-group">
+
+
+                                            <button class="btn btn-success my-2" type="submit">Update Data</button>
+
+
+                                        </div>
+
+
+
+                                    </form>
+
+
+                                </div>
+
+
+                                <div class="modal-footer">
+
+
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+
+                <div id="myModal" class="modal fade" role="dialog">
+
+
+                    <div class="modal-dialog">
+
+
+                        <div class="modal-content">
+
+
+                            <div class="modal-header">
+
+
+                                <h4 class="modal-title">Please Insert Data</h4>
+
+
+                            </div>
+
+
+                            <div class="modal-body">
+
+
+                                <form action="{{ url_for('add_patientdata') }}" method="POST">
+
+                                    <!-- <div class="form-group col-xs-6 ">
+
+
+                    <label>First Name:</label>
+                    <input type="text" class="form-control" name="firstname" required="1">
+
+
+                  </div>
+
+
+                  <div class="form-group pull-right form-inline">
+
+
+                    <label>Last Name:</label>
+                    <input type="text" class="form-control" name="lastname" >
+
+
+                  </div> -->
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>First Name:</label>
+                                                <input type="text" class="form-control" name="firstname" pattern="[a-zA-Z\s]+" title="firstname should contain only lowercase or uppercase letters" maxlength="15"  required="1">
+                                            </div>
+                                        </div><!-- /.col -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Last Name:</label>
+                                                <input type="text" class="form-control" pattern="[a-zA-Z\s]+" title="lastname should contain only lowercase or uppercase letters" maxlength="15"  name="lastname">
+                                            </div>
+                                        </div><!-- /.col -->
+                                    </div><!-- /.row -->
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Prescription Number:</label>
+                                                <input type="text" class="form-control" name="prescription_no" maxlength="10"
+                                                    required="1">
+                                            </div>
+                                        </div><!-- /.col -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Doctor Name:</label>
+                                                <input type="text" class="form-control" name="doctorname" required="1"
+                                                    list="select-list-id" />
+                                            </div>
+                                            <datalist id="select-list-id">
+                                                <option value="Dinesh Singla"></option>
+                                                <option value="Sahil Chabra"></option>
+                                                <option value="Aarav Darsh"></option>
+                                                <option value="Dinesh Garg"></option>
+                                                <option value="Siddharth Garg"></option>
+                                                <option value="Rohit Chabra"></option>
+                                            </datalist>
+                                        </div><!-- /.col -->
+                                    </div><!-- /.row -->
+
+
+                                    <div class="form-group">
+
+
+                                        <label>Contact Number</label>
+                                        <input type="text" class="form-control" name="phone" pattern="[0-9 _,]*"  title="Phone Number should not contain any alphabet" maxlength="22"  required="1">
+
+
+                                    </div>
+
+
+
+
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>House Number:</label>
+                                                <input type="text" class="form-control" name="house_no" maxlength="10" required="1">
+                                            </div>
+                                        </div><!-- /.col -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Locality Name:</label>
+                                                <input type="text" class="form-control" name="locality_name" maxlength="25"
+                                                    required="1">
+                                            </div>
+                                        </div><!-- /.col -->
+
+                                    </div><!-- /.row -->
+
+                                   
+                                        <div class="form-group  ">
+                                            <label>City:</label>
+                                            <input type="text" class="form-control" name="city"  maxlength="15"  required="1">
+                                        </div>
+                                   
+
+
+                                    <div class="form-group">
+
+
+                                        <button class="btn btn-success my-2" type="submit">Insert Data</button>
+
+
+                                    </div>
+
+
+                                </form>
+
+
+                            </div>
+
+
+                            <div class="modal-footer">
+
+
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+        crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+        integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+        integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"
+        integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG"
+        crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="{{url_for('static', filename = 'js/bootstrap.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+
+    <script type="text/javascript" src="{{url_for('static', filename = 'js/bootstrap.min.js')}}"></script>
+</body>
+
+</html>
